@@ -1,0 +1,19 @@
+/*-- scss:defaults --*/
+
+$body-bg: #f3e5ab40;
+$body-color: #000000;
+$heading: #522a00;
+$presentation-heading-color: $heading;
+$link-color: #a01d2b;
+$selection-bg: darken($link-color, 15%);
+$selection-color: white;
+
+$presentation-font-size-root: 32px;
+$presentation-block-margin: 12px;
+
+/*-- scss:rules --*/
+
+.reveal .slide blockquote {
+  border-left: 3px solid $text-muted;
+  padding-left: 0.5em;
+}
