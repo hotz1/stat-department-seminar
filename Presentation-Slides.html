@@ -350,7 +350,7 @@
 <li><a href="#/gaussian-processes" id="/toc-gaussian-processes">Gaussian Processes</a></li>
 <li><a href="#/acquisition-functions" id="/toc-acquisition-functions">Acquisition Functions</a></li>
 </ul></li>
-<li><a href="#/previous-studies" id="/toc-previous-studies">Previous Studies</a>
+<li><a href="#/previous-research" id="/toc-previous-research">Previous Research</a>
 <ul>
 <li><a href="#/the-curse-of-dimensionality" id="/toc-the-curse-of-dimensionality">The Curse of Dimensionality</a></li>
 <li><a href="#/the-vanilla-bayesopt-paper" id="/toc-the-vanilla-bayesopt-paper">The “Vanilla BayesOpt” Paper</a></li>
@@ -358,7 +358,6 @@
 <li><a href="#/methods-results" id="/toc-methods-results">Methods + Results</a>
 <ul>
 <li><a href="#/simulation-study" id="/toc-simulation-study">Simulation Study</a></li>
-<li><a href="#/ucb-tuning" id="/toc-ucb-tuning">UCB Tuning</a></li>
 <li><a href="#/main-results" id="/toc-main-results">Main Results</a></li>
 <li><a href="#/conclusions" id="/toc-conclusions">Conclusions</a></li>
 <li><a href="#/future-research-directions" id="/toc-future-research-directions">Future Research Directions</a></li>
@@ -375,16 +374,12 @@
 <h2>Research Motivation</h2>
 <ul>
 <li>Bayesian optimization is a statistical method for designing sequential experiments to locate the global optimum of a black-box function in a given some search space.</li>
-<li>This procedure tends to struggle in higher-dimensional search spaces , leading researchers to develop specialized algorithms.</li>
-</ul>
-<div class="fragment" data-fragment-index="1">
-<ul>
+<li>This procedure tends to struggle in higher-dimensional search spaces, leading researchers to develop specialized algorithms.</li>
 <li><a href="https://arxiv.org/abs/2402.02229">A 2024 paper</a> claims that the only adjustment needed for higher-dimensional problems is to alter the parameters of the prior distribution.
 <ul>
 <li>The experimental results of this paper are limited in scope, while the claimed result is highly general.</li>
 </ul></li>
 </ul>
-</div>
 </section></section>
 <section>
 <section id="statistical-background" class="title-slide slide level1 center">
@@ -399,12 +394,8 @@
 <li><span class="math inline">\(\tilde{f}\)</span> is a real-valued function which we can query data from, but this process may be expensive or difficult.</li>
 <li>The function is defined on some compact <span style="color:#fc5a8d">input space</span> <span class="math inline">\(\mathcal{X} \subset \mathbb{R}^{D}\)</span>.</li>
 </ul></li>
-</ul>
-<div class="fragment" data-fragment-index="1">
-<ul>
 <li>The black-box optimization problem which we want to solve is: <span class="math display">\[x^{\star} = \text{argmax}_{x \in \mathcal{X}}\tilde{f}(x)\]</span></li>
 </ul>
-</div>
 </section>
 <section id="gaussian-processes" class="slide level2">
 <h2>Gaussian Processes</h2>
@@ -414,15 +405,11 @@
 <ul>
 <li>These distributions are commonly used as surrogate models in Bayesian optimization for calculating the likelihood of the function <span class="math inline">\(\tilde{f}\)</span>.</li>
 </ul></li>
-</ul>
-<div class="fragment" data-fragment-index="1">
-<ul>
 <li>A GP is fully specified by two functions; a <em>mean function</em> <span class="math inline">\(\mu_{0}(\cdot)\)</span> and a <em>kernel function</em> <span class="math inline">\(\mathbf{k}(\cdot, \cdot)\)</span>.
 <ul>
 <li>From a Bayesian statistics perspective, this implies a prior distribution <span class="math inline">\(\tilde{f}(x) \sim \mathcal{N}\left(\mu_{0}(x), \mathbf{k}(x, x)\right)\)</span> for every <span class="math inline">\(x \in \mathcal{X}\)</span>.</li>
 </ul></li>
 </ul>
-</div>
 </section>
 <section id="gaussian-processes-1" class="slide level2 unnumbered unlisted">
 <h2>Gaussian Processes</h2>
@@ -475,16 +462,10 @@
 <li>For example, if <span class="math inline">\(g \sim \mathcal{GP}\left(\mu_{0}(\cdot), \mathbf{k}(\cdot, \cdot)\right)\)</span>, then <span class="math inline">\(\mathbf{k}(x, x') = \textrm{Cov}\left(g(x), g(x')\right)\)</span>.</li>
 <li>The kernel function is crucial in ensuring that the GP surrogate model accurately represents this relationship.</li>
 </ul></li>
-</ul>
-<div class="fragment" data-fragment-index="1">
-<ul>
 <li>A common class of kernels used in Bayesian optimization are <span style="color:#fc5a8d">distance-based kernels</span>, in which <span class="math inline">\(\mathbf{k}(x, x')\)</span> is a function of the distance between <span class="math inline">\(x\)</span> and <span class="math inline">\(x'\)</span>.</li>
 </ul>
-</div>
 </div><div class="column" style="width:25%;">
-<div class="fragment fade-in" data-fragment-index="2">
 <p><img data-src="img/GP-example-plots/GP-diff-kernels-tall.png" class="absolute" style="bottom: 0px; right: 0px; height: 90%; "></p>
-</div>
 </div></div>
 </section>
 <section id="gaussian-processes-3" class="slide level2 unnumbered unlisted">
@@ -513,15 +494,9 @@
 <section id="gaussian-processes-5" class="slide level2 unnumbered unlisted">
 <h2>Gaussian Processes</h2>
 <h3 id="hyperparameters-2">Hyperparameters</h3>
-<div class="fragment">
-<p><img data-src="img/GP-example-plots/GP-diff-lenscales.png" class="absolute" style="top: 200px; left: 0px; width: 40%; "></p>
-</div>
-<div class="fragment">
-<p><img data-src="img/GP-example-plots/GP-diff-noises.png" class="absolute" style="top: 0px; left: 700px; width: 40%; "></p>
-</div>
-<div class="fragment">
-<p><img data-src="img/GP-example-plots/GP-diff-outputscales.png" class="absolute" style="left: 700px; bottom: 0px; width: 40%; "></p>
-</div>
+<p><img data-src="img/GP-example-plots/GP-diff-lenscales.png" class="absolute" style="left: 0px; bottom: 0px; height: 60%; "></p>
+<p><img data-src="img/GP-example-plots/GP-diff-noises.png" class="absolute" style="top: 0px; right: 0px; height: 47.5%; "></p>
+<p><img data-src="img/GP-example-plots/GP-diff-outputscales.png" class="absolute" style="bottom: 0px; right: 0px; height: 47.5%; "></p>
 </section>
 <section id="acquisition-functions" class="slide level2">
 <h2>Acquisition Functions</h2>
@@ -533,8 +508,8 @@
 </ul>
 </section></section>
 <section>
-<section id="previous-studies" class="title-slide slide level1 center">
-<h1>Previous Studies</h1>
+<section id="previous-research" class="title-slide slide level1 center">
+<h1>Previous Research</h1>
 
 </section>
 <section id="the-curse-of-dimensionality" class="slide level2">
@@ -569,33 +544,52 @@
 <h2>Simulation Study</h2>
 <ul>
 <li>To assess the robustness of the claimed result, we executed a broader simulation study based on the authors’ code.</li>
-<li>Our simulation study utilized the following settings:
+<li>We ran 20 simulations of Bayesian optimization under every combination of the following settings <span style="background-color:#93c572">(added simulations are highlighted)</span>:
 <ul>
-<li>Two benchmark datasets: <strong>mopta08 (124 dimensions)</strong> and <strong>svm (388 dimensions)</strong></li>
-<li>Two acquisition functions: Upper Confidence Bound and <strong>Expected Improvement</strong></li>
-<li>Four distance-based kernel functions: Matern(1/2), Matern(3/2), Matern(5/2), and <strong>RBF Kernel</strong></li>
-<li>Four models: <strong>MLE (no priors)</strong>, <strong>Gamma(3,6) prior</strong>, <strong><span class="math inline">\(D\)</span>-scaled prior</strong>, and <strong><span class="math inline">\(D\)</span>-scaled prior with outputscale</strong></li>
+<li><strong>Benchmark datasets (2)</strong>: mopta (124 dimensions) and svm (388 dimensions)</li>
+<li><strong>Acquisition functions (2)</strong>: <span style="background-color:#93c572">Upper Confidence Bound</span> and Expected Improvement</li>
+<li><strong>Kernel functions (4)</strong>: <span style="background-color:#93c572">Matern(1/2)</span>, <span style="background-color:#93c572">Matern(3/2)</span>, <span style="background-color:#93c572">Matern(5/2)</span>, RBF</li>
+<li><strong>Parametric models (4)</strong>: MLE (no priors), Gamma(3,6) prior, <span class="math inline">\(D\)</span>-scaled prior, and <span class="math inline">\(D\)</span>-scaled prior with outputscale</li>
 </ul></li>
 <li>The parameters for the UCB function were tuned separately for each dataset based on a large hyperparameter sweep.</li>
 </ul>
 </section>
-<section id="ucb-tuning" class="slide level2">
+<section id="ucb-tuning" class="slide level2 unlisted unnumbered">
 <h2>UCB Tuning</h2>
+<h3 id="dataset-mopta-124-dimensions">Dataset: mopta (124 dimensions)</h3>
+<ul>
+<li>We searched for the best <span class="math inline">\((\alpha, \gamma)\)</span> for UCB with <span class="math inline">\(\beta_{t} = \alpha\log(\gamma{t})\)</span>. In total, we ran 585 simulations across 9 values of <span class="math inline">\(\alpha\)</span> and 13 values of <span class="math inline">\(\gamma\)</span>.</li>
+<li>For the mopta dataset, we selected <span class="math inline">\(\alpha = 0.75, \gamma = 0.25\)</span>.</li>
+</ul>
+<p><img data-src="img/UCB-tuning/mopta-1000/UCB-mean-bars.png" class="absolute" style="left: 0px; bottom: 0px; height: 55%; "></p>
+<p><img data-src="img/UCB-tuning/mopta-1000/UCB-minimum-bars.png" class="absolute" style="bottom: 0px; right: 0px; height: 55%; "></p>
+</section>
+<section id="ucb-tuning-1" class="slide level2 unlisted unnumbered">
+<h2>UCB Tuning</h2>
+<h3 id="dataset-svm-388-dimensions">Dataset: svm (388 dimensions)</h3>
+<ul>
+<li>We searched for the best <span class="math inline">\((\alpha, \gamma)\)</span> for UCB with <span class="math inline">\(\beta_{t} = \alpha\log(\gamma{t})\)</span>. In total, we ran 585 simulations across 9 values of <span class="math inline">\(\alpha\)</span> and 13 values of <span class="math inline">\(\gamma\)</span>.</li>
+<li>For the svm dataset, we selected <span class="math inline">\(\alpha = 0.75, \gamma = 0.10\)</span>.</li>
+</ul>
+<p><img data-src="img/UCB-tuning/svm-1000/UCB-mean-bars.png" class="absolute" style="left: 0px; bottom: 0px; height: 55%; "></p>
+<p><img data-src="img/UCB-tuning/svm-1000/UCB-minimum-bars.png" class="absolute" style="bottom: 0px; right: 0px; height: 55%; "></p>
 </section>
 <section id="main-results" class="slide level2">
 <h2>Main Results</h2>
+<h3 id="dataset-mopta08-124-dimensions">Dataset: mopta08 (124 dimensions)</h3>
 <div class="r-stack">
-<p><img data-src="img/gelato-spoon/mopta-1000/comparison-by-model-filtered.png" class="absolute" style="top: 0px; right: 0px; width: 40%; "></p>
-<p><img data-src="img/gelato-spoon/mopta-1000/comparison-by-kernel-type-filtered.png" class="absolute" style="bottom: 0px; right: 0px; width: 40%; "></p>
-<p><img data-src="img/gelato-spoon/mopta-1000/comparison-by-acq-function-filtered.png" class="absolute" style="top: 100px; left: 0px; width: 60%; "></p>
+<p><img data-src="img/Final-Results/mopta-1000/comparison-by-acq-function-filtered.png" class="absolute" style="left: 0px; bottom: 0px; width: 60%; "></p>
+<p><img data-src="img/Final-Results/mopta-1000/comparison-by-model-filtered.png" class="absolute" style="top: 0px; right: 0px; width: 40%; "></p>
+<p><img data-src="img/Final-Results/mopta-1000/comparison-by-kernel-type-filtered.png" class="absolute" style="bottom: 0px; right: 0px; width: 40%; "></p>
 </div>
 </section>
 <section id="main-results-1" class="slide level2 unlisted unnumbered">
 <h2>Main Results</h2>
+<h3 id="dataset-svm-388-dimensions-1">Dataset: svm (388 dimensions)</h3>
 <div class="r-stack">
-<p><img data-src="img/gelato-spoon/svm-1000/comparison-by-model-filtered.png" class="absolute" style="top: 0px; right: 0px; width: 40%; "></p>
-<p><img data-src="img/gelato-spoon/svm-1000/comparison-by-kernel-type-filtered.png" class="absolute" style="bottom: 0px; right: 0px; width: 40%; "></p>
-<p><img data-src="img/gelato-spoon/svm-1000/comparison-by-acq-function-filtered.png" class="absolute" style="top: 100px; left: 0px; width: 60%; "></p>
+<p><img data-src="img/Final-Results/svm-1000/comparison-by-acq-function-filtered.png" class="absolute" style="left: 0px; bottom: 0px; width: 60%; "></p>
+<p><img data-src="img/Final-Results/svm-1000/comparison-by-model-filtered.png" class="absolute" style="top: 0px; right: 0px; width: 40%; "></p>
+<p><img data-src="img/Final-Results/svm-1000/comparison-by-kernel-type-filtered.png" class="absolute" style="bottom: 0px; right: 0px; width: 40%; "></p>
 </div>
 </section>
 <section id="conclusions" class="slide level2">
@@ -618,14 +612,12 @@
 </section>
 <section id="acknowledgements" class="slide level2 unnumbered unlisted">
 <h2>Acknowledgements</h2>
-<div>
 <ul>
-<li class="fragment"><span style="color:#fc5a8d">Geoff Pleiss</span>, for being a tremendous supervisor to work with throughout the past year of my program.</li>
-<li class="fragment"><span style="color:#fc5a8d">Colin Doumont</span> and <span style="color:#fc5a8d">Donney Fan</span> for their assistance with coding the simulation studies.</li>
-<li class="fragment"><span style="color:#fc5a8d">My friends and family</span> for their support throughout my Masters program.</li>
-<li class="fragment"><span style="color:#fc5a8d">The audience</span> for being here today to see my presentation.</li>
+<li><span style="color:#fc5a8d">Geoff Pleiss</span>, for being a tremendous supervisor to work with throughout the past year of my program.</li>
+<li><span style="color:#fc5a8d">Colin Doumont</span> and <span style="color:#fc5a8d">Donney Fan</span> for their assistance with coding the simulation studies.</li>
+<li><span style="color:#fc5a8d">My friends and family</span> for their support throughout my Masters program.</li>
+<li><span style="color:#fc5a8d">The audience</span> for being here today to see my presentation.</li>
 </ul>
-</div>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
@@ -683,7 +675,7 @@
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
@@ -841,31 +833,6 @@
           RevealZoom
         ]
       });
-    </script>
-    <script>
-
-      Reveal.on( 'slidechanged', event => {
-
-        if (event.currentSlide.className.includes("title-slide")) {
-
-          var prev_ind = Reveal.getIndices(event.previousSlide)
-
-          var cur_ind = Reveal.getIndices(event.currentSlide)
-
-          if (cur_ind.h == prev_ind.h && cur_ind.v < prev_ind.v) {
-
-            Reveal.prev()
-
-          } else {
-
-            Reveal.next()
-
-          }
-
-        }
-
-    } );
-
     </script>
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {

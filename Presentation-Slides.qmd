@@ -19,13 +19,12 @@ format:
   revealjs:
     width: 1280
     height: 720
-    slide-number: false
+    slide-number: true
     theme: [default, custom.scss]
     toc: true
     toc-depth: 2
     toc-title: "Table of Contents"
 include-after-body:
-  - skip-section.html
   - text: |
       <style>
         .reveal .slide ul {
@@ -41,12 +40,9 @@ editor:
 ## Research Motivation 
 
 - Bayesian optimization is a statistical method for designing sequential experiments to locate the global optimum of a black-box function in a given some search space.
-- This procedure tends to struggle in higher-dimensional search spaces , leading researchers to develop specialized algorithms.
-
-::: {.fragment fragment-index=1}
+- This procedure tends to struggle in higher-dimensional search spaces, leading researchers to develop specialized algorithms.
 - [A 2024 paper](https://arxiv.org/abs/2402.02229) claims that the only adjustment needed for higher-dimensional problems is to alter the parameters of the prior distribution.
   * The experimental results of this paper are limited in scope, while the claimed result is highly general.
-:::
 
 # Statistical Background 
 
@@ -55,11 +51,7 @@ editor:
 - Bayesian optimization ([BayesOpt]{style="color:#fc5a8d"}) is a statistical methodology for efficiently finding the *true* global maximum of a black-box function $\tilde{f}(x)$.
   * $\tilde{f}$ is a real-valued function which we can query data from, but this process may be expensive or difficult. 
   * The function is defined on some compact [input space]{style="color:#fc5a8d"} $\mathcal{X} \subset \mathbb{R}^{D}$.
-  
-::: {.fragment fragment-index=1}
-- The black-box optimization problem which we want to solve is:
-$$x^{\star} = \text{argmax}_{x \in \mathcal{X}}\tilde{f}(x)$$
-:::
+- The black-box optimization problem which we want to solve is: $$x^{\star} = \text{argmax}_{x \in \mathcal{X}}\tilde{f}(x)$$
 
 ## Gaussian Processes
 
@@ -67,11 +59,8 @@ $$x^{\star} = \text{argmax}_{x \in \mathcal{X}}\tilde{f}(x)$$
 
 - A [Gaussian Process]{style="color:#fc5a8d"} (GP) is a statistical model which extends the finite-dimensional normal distribution to real-valued functions. 
   * These distributions are commonly used as surrogate models in Bayesian optimization for calculating the likelihood of the function $\tilde{f}$.
-
-::: {.fragment fragment-index=1}
 - A GP is fully specified by two functions; a *mean function* $\mu_{0}(\cdot)$ and a *kernel function* $\mathbf{k}(\cdot, \cdot)$.
   * From a Bayesian statistics perspective, this implies a prior distribution $\tilde{f}(x) \sim \mathcal{N}\left(\mu_{0}(x), \mathbf{k}(x, x)\right)$ for every $x \in \mathcal{X}$.
-:::
 
 ## Gaussian Processes {.unnumbered .unlisted}
 
@@ -131,15 +120,10 @@ $$x^{\star} = \text{argmax}_{x \in \mathcal{X}}\tilde{f}(x)$$
 - The kernel $\mathbf{k}(\cdot, \cdot)$ of a GP specifies the covariance between outputs as a function of their respective arguments.
   * For example, if $g \sim \mathcal{GP}\left(\mu_{0}(\cdot), \mathbf{k}(\cdot, \cdot)\right)$, then $\mathbf{k}(x, x') = \textrm{Cov}\left(g(x), g(x')\right)$.
   * The kernel function is crucial in ensuring that the GP surrogate model accurately represents this relationship.
-
-:::: {.fragment fragment-index=1}
 - A common class of kernels used in Bayesian optimization are [distance-based kernels]{style="color:#fc5a8d"}, in which $\mathbf{k}(x, x')$ is a function of the distance between $x$ and $x'$. 
-::::
 :::
 ::: {.column width="25%"}
-:::: {.fragment .fade-in fragment-index=2}
 ![](img/GP-example-plots/GP-diff-kernels-tall.png){.absolute right=0 bottom=0 height=90%}
-::::
 :::
 ::::
 
@@ -164,17 +148,11 @@ $$x^{\star} = \text{argmax}_{x \in \mathcal{X}}\tilde{f}(x)$$
 
 ### Hyperparameters
 
-:::: {.fragment}
-![](img/GP-example-plots/GP-diff-lenscales.png){.absolute top=200 left=0 width=40%}
-::::
+![](img/GP-example-plots/GP-diff-lenscales.png){.absolute bottom=0 left=0 height=60%}
 
-:::: {.fragment}
-![](img/GP-example-plots/GP-diff-noises.png){.absolute top=0 left=700 width=40%}
-::::
+![](img/GP-example-plots/GP-diff-noises.png){.absolute top=0 right=0 height=47.5%}
 
-:::: {.fragment}
-![](img/GP-example-plots/GP-diff-outputscales.png){.absolute bottom=0 left=700 width=40%}
-::::
+![](img/GP-example-plots/GP-diff-outputscales.png){.absolute bottom=0 right=0 height=47.5%}
 
 ## Acquisition Functions
 
@@ -183,7 +161,7 @@ $$x^{\star} = \text{argmax}_{x \in \mathcal{X}}\tilde{f}(x)$$
 - In a Bayesian optimization loop, $x_{n+1} = \text{argmax}_{x \in \mathcal{X}}u(x \vert \mathcal{D}_{n})$. 
 - Two common acquisition functions are the Expected Improvement (EI) and Upper Confidence Bound (UCB).
 
-# Previous Studies
+# Previous Research
 
 ## The Curse of Dimensionality
 
@@ -205,35 +183,61 @@ $$x^{\star} = \text{argmax}_{x \in \mathcal{X}}\tilde{f}(x)$$
 ## Simulation Study
 
 - To assess the robustness of the claimed result, we executed a broader simulation study based on the authors' code.
-- Our simulation study utilized the following settings:
-  * Two benchmark datasets: **mopta08 (124 dimensions)** and **svm (388 dimensions)**
-  * Two acquisition functions: Upper Confidence Bound and **Expected Improvement**
-  * Four distance-based kernel functions: Matern(1/2), Matern(3/2), Matern(5/2), and **RBF Kernel**
-  * Four models: **MLE (no priors)**, **Gamma(3,6) prior**, **$D$-scaled prior**, and **$D$-scaled prior with outputscale**
+- We ran 20 simulations of Bayesian optimization under every combination of the following settings [(added simulations are highlighted)]{style="background-color:#93c572"}:
+  * **Benchmark datasets (2)**: mopta (124 dimensions) and svm (388 dimensions)
+  * **Acquisition functions (2)**: [Upper Confidence Bound]{style="background-color:#93c572"} and Expected Improvement
+  * **Kernel functions (4)**: [Matern(1/2)]{style="background-color:#93c572"}, [Matern(3/2)]{style="background-color:#93c572"}, [Matern(5/2)]{style="background-color:#93c572"}, RBF
+  * **Parametric models (4)**: MLE (no priors), Gamma(3,6) prior, $D$-scaled prior, and $D$-scaled prior with outputscale
 - The parameters for the UCB function were tuned separately for each dataset based on a large hyperparameter sweep.
 
-## UCB Tuning
+## UCB Tuning {.unlisted .unnumbered}
+
+### Dataset: mopta (124 dimensions)
+
+- We searched for the best $(\alpha, \gamma)$ for UCB with $\beta_{t} = \alpha\log(\gamma{t})$. In total, we ran 585 simulations across 9 values of $\alpha$ and 13 values of $\gamma$. 
+- For the mopta dataset, we selected $\alpha = 0.75, \gamma = 0.25$. 
+
+![](img/UCB-tuning/mopta-1000/UCB-mean-bars.png){.absolute bottom=0 left=0 height=55%}
+
+![](img/UCB-tuning/mopta-1000/UCB-minimum-bars.png){.absolute bottom=0 right=0 height=55%}
+
+## UCB Tuning {.unlisted .unnumbered}
+
+### Dataset: svm (388 dimensions)
+
+- We searched for the best $(\alpha, \gamma)$ for UCB with $\beta_{t} = \alpha\log(\gamma{t})$. In total, we ran 585 simulations across 9 values of $\alpha$ and 13 values of $\gamma$. 
+- For the svm dataset, we selected $\alpha = 0.75, \gamma = 0.10$. 
+
+![](img/UCB-tuning/svm-1000/UCB-mean-bars.png){.absolute bottom=0 left=0 height=55%}
+
+![](img/UCB-tuning/svm-1000/UCB-minimum-bars.png){.absolute bottom=0 right=0 height=55%}
 
 ## Main Results
 
+### Dataset: mopta08 (124 dimensions)
+
 :::{.r-stack}
 
-![](img/gelato-spoon/mopta-1000/comparison-by-model-filtered.png){.absolute top=0 right=0 width=40%}
+![](img/Final-Results/mopta-1000/comparison-by-acq-function-filtered.png){.absolute bottom=0 left=0 width=60%}
 
-![](img/gelato-spoon/mopta-1000/comparison-by-kernel-type-filtered.png){.absolute bottom=0 right=0 width=40%}
+![](img/Final-Results/mopta-1000/comparison-by-model-filtered.png){.absolute top=0 right=0 width=40%}
 
-![](img/gelato-spoon/mopta-1000/comparison-by-acq-function-filtered.png){.absolute top=100 left=0 width=60%}
+![](img/Final-Results/mopta-1000/comparison-by-kernel-type-filtered.png){.absolute bottom=0 right=0 width=40%}
+
 :::
 
 ## Main Results {.unlisted .unnumbered}
 
+### Dataset: svm (388 dimensions)
+
 :::{.r-stack}
 
-![](img/gelato-spoon/svm-1000/comparison-by-model-filtered.png){.absolute top=0 right=0 width=40%}
+![](img/Final-Results/svm-1000/comparison-by-acq-function-filtered.png){.absolute bottom=0 left=0 width=60%}
 
-![](img/gelato-spoon/svm-1000/comparison-by-kernel-type-filtered.png){.absolute bottom=0 right=0 width=40%}
+![](img/Final-Results/svm-1000/comparison-by-model-filtered.png){.absolute top=0 right=0 width=40%}
 
-![](img/gelato-spoon/svm-1000/comparison-by-acq-function-filtered.png){.absolute top=100 left=0 width=60%}
+![](img/Final-Results/svm-1000/comparison-by-kernel-type-filtered.png){.absolute bottom=0 right=0 width=40%}
+
 :::
 
 ## Conclusions
@@ -250,9 +254,7 @@ $$x^{\star} = \text{argmax}_{x \in \mathcal{X}}\tilde{f}(x)$$
 
 ## Acknowledgements {.unnumbered .unlisted}
 
-::: {.incremental}
 - [Geoff Pleiss]{style="color:#fc5a8d"}, for being a tremendous supervisor to work with throughout the past year of my program.
 - [Colin Doumont]{style="color:#fc5a8d"} and [Donney Fan]{style="color:#fc5a8d"} for their assistance with coding the simulation studies.
 - [My friends and family]{style="color:#fc5a8d"} for their support throughout my Masters program.
 - [The audience]{style="color:#fc5a8d"} for being here today to see my presentation.
-:::
