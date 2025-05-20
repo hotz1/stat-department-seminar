@@ -358,7 +358,11 @@
 <li><a href="#/methods-results" id="/toc-methods-results">Methods + Results</a>
 <ul>
 <li><a href="#/simulation-study" id="/toc-simulation-study">Simulation Study</a></li>
+<li><a href="#/ucb-tuning" id="/toc-ucb-tuning">UCB Tuning</a></li>
 <li><a href="#/main-results" id="/toc-main-results">Main Results</a></li>
+</ul></li>
+<li><a href="#/discussion" id="/toc-discussion">Discussion</a>
+<ul>
 <li><a href="#/conclusions" id="/toc-conclusions">Conclusions</a></li>
 <li><a href="#/future-research-directions" id="/toc-future-research-directions">Future Research Directions</a></li>
 </ul></li>
@@ -373,12 +377,13 @@
 <section id="research-motivation" class="slide level2">
 <h2>Research Motivation</h2>
 <ul>
-<li>Bayesian optimization is a statistical method for designing sequential experiments to locate the global optimum of a black-box function in a given some search space.</li>
-<li>This procedure tends to struggle in higher-dimensional search spaces, leading researchers to develop specialized algorithms.</li>
-<li><a href="https://arxiv.org/abs/2402.02229">A 2024 paper</a> claims that the only adjustment needed for higher-dimensional problems is to alter the parameters of the prior distribution.
+<li>Bayesian optimization is a statistical method for designing sequential experiments to locate the global optimum of a black-box function defined on a finite-dimensional input space.</li>
+<li>This procedure tends to struggle in higher-dimensional search spaces.</li>
+<li><a href="https://arxiv.org/abs/2402.02229">A 2024 paper</a> claims that the sole adjustment required for high-dimensional problems is to adjust the parameters of the prior distribution.
 <ul>
 <li>The experimental results of this paper are limited in scope, while the claimed result is highly general.</li>
 </ul></li>
+<li>This project assesses the robustness of the main stated result of their paper.</li>
 </ul>
 </section></section>
 <section>
@@ -417,14 +422,10 @@
 <ul>
 <li>As more sample observations <span class="math inline">\((x_{i}, y_{i})\)</span> are collected, Gaussian process regression helps us refine the posterior predictive distributions for the function <span class="math inline">\(\tilde{f}\)</span>.</li>
 </ul>
-<div class="fragment fade-in" data-fragment-index="1">
 <p><img data-src="img/GP-example-plots/blackbox-function-plot.png" class="absolute" style="top: 300px; left: 0px; width: 47.5%; "></p>
-</div>
 <div class="r-stack">
-<div class="fragment fade-in" data-fragment-index="1">
 <div class="fragment fade-out" data-fragment-index="2">
 <p><img data-src="img/GP-example-plots/GP-prior.png" class="absolute" style="top: 300px; right: 0px; width: 47.5%; "></p>
-</div>
 </div>
 <div class="fragment fade-in" data-fragment-index="2">
 <div class="fragment fade-out" data-fragment-index="3">
@@ -459,7 +460,7 @@
 <ul>
 <li>The kernel <span class="math inline">\(\mathbf{k}(\cdot, \cdot)\)</span> of a GP specifies the covariance between outputs as a function of their respective arguments.
 <ul>
-<li>For example, if <span class="math inline">\(g \sim \mathcal{GP}\left(\mu_{0}(\cdot), \mathbf{k}(\cdot, \cdot)\right)\)</span>, then <span class="math inline">\(\mathbf{k}(x, x') = \textrm{Cov}\left(g(x), g(x')\right)\)</span>.</li>
+<li>For example: <span class="math display">\[g \sim \mathcal{GP}\left(\mu_{0}(\cdot), \mathbf{k}(\cdot, \cdot)\right) \implies   \mathbf{k}(x, x') = \textrm{Cov}\left(g(x), g(x')\right)\]</span></li>
 <li>The kernel function is crucial in ensuring that the GP surrogate model accurately represents this relationship.</li>
 </ul></li>
 <li>A common class of kernels used in Bayesian optimization are <span style="color:#fc5a8d">distance-based kernels</span>, in which <span class="math inline">\(\mathbf{k}(x, x')\)</span> is a function of the distance between <span class="math inline">\(x\)</span> and <span class="math inline">\(x'\)</span>.</li>
@@ -502,8 +503,8 @@
 <h2>Acquisition Functions</h2>
 <ul>
 <li>In order to sequentially design experiments with Bayesian optimization, there must be some mechanism which determines the best input to use in the next iteration.</li>
-<li>An <span style="color:#fc5a8d">acquisition function</span> is a non-negative function <span class="math inline">\(u(x \vert \mathcal{D}_{n})\)</span> which represents the potential utility gained by querying <span class="math inline">\(\tilde{f}(x)\)</span>, based on the information provided by the dataset <span class="math inline">\(\mathcal{D}_{n}\)</span>.</li>
-<li>In a Bayesian optimization loop, <span class="math inline">\(x_{n+1} = \text{argmax}_{x \in \mathcal{X}}u(x \vert \mathcal{D}_{n})\)</span>.</li>
+<li>An <span style="color:#fc5a8d">acquisition function</span> is a non-negative function <span class="math inline">\(u(x \vert \mathcal{D}_{t})\)</span> which represents the potential utility gained by querying <span class="math inline">\(\tilde{f}(x)\)</span>, based on the information provided by the dataset <span class="math inline">\(\mathcal{D}_{t}\)</span>.</li>
+<li>In a Bayesian optimization loop, <span class="math inline">\(x_{t+1} = \text{argmax}_{x \in \mathcal{X}}u(x \vert \mathcal{D}_{t})\)</span>.</li>
 <li>Two common acquisition functions are the Expected Improvement (EI) and Upper Confidence Bound (UCB).</li>
 </ul>
 </section></section>
@@ -554,7 +555,16 @@
 <li>The parameters for the UCB function were tuned separately for each dataset based on a large hyperparameter sweep.</li>
 </ul>
 </section>
-<section id="ucb-tuning" class="slide level2 unlisted unnumbered">
+<section id="ucb-tuning" class="slide level2">
+<h2>UCB Tuning</h2>
+<h3 id="motivation">Motivation</h3>
+<ul>
+<li>The Upper Confidence Bound (UCB) acquisition function is given by <span class="math display">\[u(x \vert \mathcal{D}_{t}) = \mu_{\textrm{post}}(x \vert \mathcal{D}_{t}) + \beta_{t}^{1/2}\sigma_{\textrm{post}}(x \vert \mathcal{D}_{t})\]</span></li>
+<li>In 2012, Srinivas et al.&nbsp;showed that the cumulative regret for UCB-based Bayesian optimization is bounded when <span class="math inline">\(\beta_{t} \in \mathcal{O}(\log(t))\)</span>.</li>
+<li>We performed Bayesian optimization with <span class="math inline">\(\beta_{t} = \alpha\log(\gamma{t})\)</span> for various <span class="math inline">\((\alpha, \gamma)\)</span>.</li>
+</ul>
+</section>
+<section id="ucb-tuning-1" class="slide level2 unlisted unnumbered">
 <h2>UCB Tuning</h2>
 <h3 id="dataset-mopta-124-dimensions">Dataset: mopta (124 dimensions)</h3>
 <ul>
@@ -564,7 +574,7 @@
 <p><img data-src="img/UCB-tuning/mopta-1000/UCB-mean-bars.png" class="absolute" style="left: 0px; bottom: 0px; height: 55%; "></p>
 <p><img data-src="img/UCB-tuning/mopta-1000/UCB-minimum-bars.png" class="absolute" style="bottom: 0px; right: 0px; height: 55%; "></p>
 </section>
-<section id="ucb-tuning-1" class="slide level2 unlisted unnumbered">
+<section id="ucb-tuning-2" class="slide level2 unlisted unnumbered">
 <h2>UCB Tuning</h2>
 <h3 id="dataset-svm-388-dimensions">Dataset: svm (388 dimensions)</h3>
 <ul>
@@ -574,29 +584,42 @@
 <p><img data-src="img/UCB-tuning/svm-1000/UCB-mean-bars.png" class="absolute" style="left: 0px; bottom: 0px; height: 55%; "></p>
 <p><img data-src="img/UCB-tuning/svm-1000/UCB-minimum-bars.png" class="absolute" style="bottom: 0px; right: 0px; height: 55%; "></p>
 </section>
+<section id="ucb-tuning-3" class="slide level2 unnumbered unlisted">
+<h2>UCB Tuning</h2>
+<h3 id="insights">Insights</h3>
+<ul>
+<li>For the mopta dataset (<span class="math inline">\(D = 124\)</span>), the differences between the optimal values discovered per simulation after 1000 iterations are quite similar.</li>
+<li>For the svm dataset (<span class="math inline">\(D = 388\)</span>), there is much more variability among the optimal values found per simulation at iteration <span class="math inline">\(t = 1000\)</span>.</li>
+</ul>
+</section>
 <section id="main-results" class="slide level2">
 <h2>Main Results</h2>
 <h3 id="dataset-mopta08-124-dimensions">Dataset: mopta08 (124 dimensions)</h3>
 <div class="r-stack">
-<p><img data-src="img/Final-Results/mopta-1000/comparison-by-acq-function-filtered.png" class="absolute" style="left: 0px; bottom: 0px; width: 60%; "></p>
-<p><img data-src="img/Final-Results/mopta-1000/comparison-by-model-filtered.png" class="absolute" style="top: 0px; right: 0px; width: 40%; "></p>
-<p><img data-src="img/Final-Results/mopta-1000/comparison-by-kernel-type-filtered.png" class="absolute" style="bottom: 0px; right: 0px; width: 40%; "></p>
+<p><img data-src="img/Final-Results/mopta-1000/comparison-by-acq-function-filtered.png" class="absolute" style="left: 0px; bottom: 0px; width: 47.5%; "></p>
+<p><img data-src="img/Final-Results/mopta-1000/comparison-by-model-filtered.png" class="absolute" style="top: 0px; right: 0px; width: 47.5%; "></p>
+<p><img data-src="img/Final-Results/mopta-1000/comparison-by-kernel-type-filtered.png" class="absolute" style="bottom: 0px; right: 0px; width: 47.5%; "></p>
 </div>
 </section>
 <section id="main-results-1" class="slide level2 unlisted unnumbered">
 <h2>Main Results</h2>
 <h3 id="dataset-svm-388-dimensions-1">Dataset: svm (388 dimensions)</h3>
 <div class="r-stack">
-<p><img data-src="img/Final-Results/svm-1000/comparison-by-acq-function-filtered.png" class="absolute" style="left: 0px; bottom: 0px; width: 60%; "></p>
-<p><img data-src="img/Final-Results/svm-1000/comparison-by-model-filtered.png" class="absolute" style="top: 0px; right: 0px; width: 40%; "></p>
-<p><img data-src="img/Final-Results/svm-1000/comparison-by-kernel-type-filtered.png" class="absolute" style="bottom: 0px; right: 0px; width: 40%; "></p>
+<p><img data-src="img/Final-Results/svm-1000/comparison-by-acq-function-filtered.png" class="absolute" style="left: 0px; bottom: 0px; width: 47.5%; "></p>
+<p><img data-src="img/Final-Results/svm-1000/comparison-by-model-filtered.png" class="absolute" style="top: 0px; right: 0px; width: 47.5%; "></p>
+<p><img data-src="img/Final-Results/svm-1000/comparison-by-kernel-type-filtered.png" class="absolute" style="bottom: 0px; right: 0px; width: 47.5%; "></p>
 </div>
+</section></section>
+<section>
+<section id="discussion" class="title-slide slide level1 center">
+<h1>Discussion</h1>
+
 </section>
 <section id="conclusions" class="slide level2">
 <h2>Conclusions</h2>
 <ul>
-<li>The primary result of this project is that the result claimed by Hvarfner et al.&nbsp;is robust to changes to both the acquisition function and the kernel function.</li>
-<li>This result has broad implications for many applications of Bayesian optimization, as this allows for a much simpler framework for performing high-dimensional optimization without requiring any specialized algorithms.</li>
+<li>The primary finding of this project is that the result shown experimentally by Hvarfner et al.&nbsp;in their paper is robust to changes to the acquisition and kernel functions used for Bayesian optimization.</li>
+<li>This result has broad practical implications for applications of Bayesian optimization, as their recommended alteration to the prior distribution for the lengthscale parameters is simple and elegant.</li>
 </ul>
 </section>
 <section id="future-research-directions" class="slide level2">
@@ -604,10 +627,10 @@
 <ul>
 <li>Potential directions for future research in this topic include the following:
 <ul>
-<li>Changing acquisition functions (e.g.&nbsp;Probability of Improvement, Entropy Search)</li>
-<li>Using non-distance kernel functions (such as the polynomial kernel) with similar scaling of inputs based on the dimension of the search space.</li>
+<li>Changing acquisition functions (e.g.&nbsp;Probability of Improvement, Entropy Search, Knowledge Gradient)</li>
+<li>Using non-distance kernel functions (such as the polynomial kernel) with similarly scaling of inputs based on the dimension of the search space.</li>
 </ul></li>
-<li>Additionally, it would be enlightening to have a more robust and thorough version of the mathematical explanation given in the prior paper.</li>
+<li>More thorough treatment of the mathematical explanation provded in the inciting paper for this project.</li>
 </ul>
 </section>
 <section id="acknowledgements" class="slide level2 unnumbered unlisted">
@@ -615,7 +638,7 @@
 <ul>
 <li><span style="color:#fc5a8d">Geoff Pleiss</span>, for being a tremendous supervisor to work with throughout the past year of my program.</li>
 <li><span style="color:#fc5a8d">Colin Doumont</span> and <span style="color:#fc5a8d">Donney Fan</span> for their assistance with coding the simulation studies.</li>
-<li><span style="color:#fc5a8d">My friends and family</span> for their support throughout my Masters program.</li>
+<li><span style="color:#fc5a8d">My friends and parents</span> for their support throughout my Masters program.</li>
 <li><span style="color:#fc5a8d">The audience</span> for being here today to see my presentation.</li>
 </ul>
 <div class="quarto-auto-generated-content">
